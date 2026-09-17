@@ -1,7 +1,7 @@
 ---
 title: "An older entry"
 date: 2024-11-03
-tags: [example]
+tags: ["example"]
 ---
 
 A second post, two years earlier, so the year grouping has something to group and

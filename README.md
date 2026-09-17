@@ -16,7 +16,7 @@ From github.com's web editor, on any device with a browser:
    ---
    title: "A thing I made"
    date: 2026-09-17
-   tags: [hardware, esp32]
+   tags: ["hardware", "esp32"]
    summary: "One line, shown on the index."
    ---
    ```
@@ -24,6 +24,38 @@ From github.com's web editor, on any device with a browser:
 4. **Commit changes** to `main`. GitHub rebuilds; the post appears in a minute or so.
 
 `tags` and `summary` are optional. `title` and `date` are not.
+
+### Tags: quote every one, always
+
+Jekyll accepts four syntaxes and all four produce an identical result for ordinary
+tags. Verified by building real posts, not by reading docs:
+
+| Written | Renders as |
+| --- | --- |
+| `tags: [hardware, esp32]` | hardware, esp32 |
+| `tags: ["hardware", "esp32"]` | hardware, esp32 |
+| `tags:` then `  - hardware` / `  - esp32` | hardware, esp32 |
+| `tags: hardware esp32` | hardware, esp32 |
+
+So for `hardware` it genuinely does not matter. It matters for these:
+
+| Written unquoted | Actually renders as |
+| --- | --- |
+| `tags: [no, on, off, yes]` | **false, true, false, true** |
+| `tags: [null]` | **the tag vanishes entirely** |
+| `tags: web design` | **two tags: "web" and "design"** |
+| `tags: [rust: embedded]` | **build fails** — invalid YAML |
+
+The first three are the dangerous ones: no error, no warning, wrong output. YAML 1.1
+treats `yes`/`no`/`on`/`off` as booleans and `null` as nothing, and the bare-string
+form is a Jekyll convenience that splits on whitespace — so a two-word tag silently
+becomes two tags.
+
+Quoted, every one of those survives intact: `no`, `on`, `off`, `yes`, `null`,
+`2024`, `3d`, `c++`, `rust: embedded`, `web design`.
+
+**Use `tags: ["one", "two"]`.** One rule, same as `title` and `summary`, no
+exceptions to remember. `npm test` fails if any post in `_posts/` uses another form.
 
 **Keep the quotes around `title` and `summary`.** An unquoted title containing a
 colon — `title: Hello: a post` — is invalid YAML, fails the build, and the post

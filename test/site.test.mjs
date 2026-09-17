@@ -36,10 +36,25 @@ export function read(path) {
   return readFileSync(`_site/${path}`, 'utf8');
 }
 
+// Identity comes from _config.yml, never from a literal in here. These values
+// are meant to change — an earlier version of this file hard-coded the
+// placeholder wordmark, so renaming the site broke four tests that had nothing
+// to do with naming.
+const CONFIG = readFileSync('_config.yml', 'utf8');
+const conf = (key) => CONFIG.match(new RegExp(`^${key}:\\s*"(.*)"\\s*$`, 'm'))?.[1];
+
+const TITLE = conf('title');
+const TAGLINE = conf('tagline');
+
 const SITE = read('index.html');
 
+test('_config.yml declares a title and tagline', () => {
+  assert.ok(TITLE, 'title: is missing or unquoted in _config.yml');
+  assert.ok(TAGLINE, 'tagline: is missing or unquoted in _config.yml');
+});
+
 test('the site builds and the front page carries the wordmark', () => {
-  assert.match(SITE, /Placeholder Wordmark/);
+  assert.ok(SITE.includes(TITLE), `front page does not carry the wordmark "${TITLE}"`);
 });
 
 test('the document declares its language', () => {
@@ -84,8 +99,11 @@ test('no page uses a relative time string', () => {
 });
 
 test('the masthead carries the wordmark and tagline and links home', () => {
-  assert.match(POST, /A placeholder tagline/);
-  assert.match(POST, /<a href="\/">Placeholder Wordmark<\/a>/);
+  assert.ok(POST.includes(TAGLINE), `masthead is missing the tagline "${TAGLINE}"`);
+  assert.ok(
+    POST.includes(`<a href="/">${TITLE}</a>`),
+    `masthead does not link home under the wordmark "${TITLE}"`,
+  );
 });
 
 test('the index groups entries under year headings, newest first', () => {
@@ -134,7 +152,7 @@ test('the reading experience does not depend on a Jelly element', () => {
   // Strip every Jelly element and its content, then check the page still has
   // its masthead, its headings and its links.
   const withoutJelly = SITE.replace(/<jelly-[a-z-]+[\s\S]*?<\/jelly-[a-z-]+>/g, '');
-  assert.match(withoutJelly, /Placeholder Wordmark/);
+  assert.ok(withoutJelly.includes(TITLE));
   assert.match(withoutJelly, /Hello, world: a first post/);
   assert.match(withoutJelly, /class="index-year/);
 });
@@ -174,7 +192,25 @@ test('the README explains publishing without a local toolchain', () => {
 });
 
 test('the about page builds', () => {
-  assert.match(read('about/index.html'), /Placeholder Wordmark/);
+  assert.ok(read('about/index.html').includes(TITLE));
+});
+
+test('every tag in every post is quoted', () => {
+  // Unquoted YAML tags are silently coerced. Verified by building real posts:
+  //   tags: [no, on, off, yes, null]  ->  false, true, false, true, and `null`
+  //   vanishes from the list entirely.
+  // Quoting every tag removes the whole class of problem, and matches the rule
+  // already applied to `title` and `summary`.
+  for (const file of readdirSync('_posts')) {
+    const fm = readFileSync(`_posts/${file}`, 'utf8').split('---')[1] ?? '';
+    const line = fm.match(/^tags:\s*(.+)$/m)?.[1];
+    if (!line) continue;
+    assert.match(
+      line.trim(),
+      /^\[\s*(?:"[^"]*"\s*,\s*)*"[^"]*"\s*\]$/,
+      `${file}: tags must be a quoted flow list, e.g. tags: ["hardware", "esp32"] — got ${line.trim()}`,
+    );
+  }
 });
 
 test('no template renders the build clock', () => {
