@@ -46,6 +46,33 @@ const conf = (key) => CONFIG.match(new RegExp(`^${key}:\\s*"(.*)"\\s*$`, 'm'))?.
 const TITLE = conf('title');
 const TAGLINE = conf('tagline');
 
+// Posts are content: their titles, tags and summaries are all meant to change.
+// Every expectation about a post is derived from its source file, so editing a
+// post can never break a test about layout, dates or the index.
+const POSTS = readdirSync('_posts').map((file) => {
+  const src = readFileSync(`_posts/${file}`, 'utf8');
+  const fm = src.split('---')[1] ?? '';
+  const field = (k) => fm.match(new RegExp(`^${k}:\\s*"(.*)"\\s*$`, 'm'))?.[1];
+  const [, y, m, d, slug] = file.match(/^(\d{4})-(\d{2})-(\d{2})-(.+)\.md$/);
+  return {
+    file,
+    slug,
+    title: field('title'),
+    summary: field('summary'),
+    draft: /^draft:\s*true\s*$/m.test(fm),
+    tagLine: fm.match(/^tags:\s*(.+)$/m)?.[1]?.trim(),
+    tags: [...(fm.match(/^tags:\s*\[(.*)\]\s*$/m)?.[1] ?? '').matchAll(/"([^"]*)"/g)].map((t) => t[1]),
+    // permalink is /:year/:title/ — see _config.yml
+    url: `${y}/${slug}/`,
+    humanDate: new Date(`${y}-${m}-${d}T12:00:00Z`).toLocaleDateString('en-GB', {
+      day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
+    }),
+  };
+});
+
+const PUBLISHED = POSTS.filter((p) => !p.draft);
+const DRAFTS = POSTS.filter((p) => p.draft);
+
 const SITE = read('index.html');
 
 test('_config.yml declares a title and tagline', () => {
@@ -76,13 +103,17 @@ test('webfonts declare a fallback that holds the layout', () => {
   assert.match(css, /--font-mono:[^;]*\bui-monospace\b/);
 });
 
-const POST = read('2026/hello/index.html');
+// The newest published post, whatever it happens to be called.
+const NEWEST = PUBLISHED[PUBLISHED.length - 1];
+const POST = read(`${NEWEST.url}index.html`);
 
 test('a post renders its title, absolute date and tags', () => {
-  assert.match(POST, /Hello, world: a first post/);
-  assert.match(POST, /17 September 2026/);
-  assert.match(POST, /meta/);
-  assert.match(POST, /example/);
+  assert.ok(POST.includes(NEWEST.title), `missing title "${NEWEST.title}"`);
+  assert.ok(POST.includes(NEWEST.humanDate), `missing date "${NEWEST.humanDate}"`);
+  assert.match(POST, /class="meta"/);
+  for (const tag of NEWEST.tags) {
+    assert.ok(POST.includes(`<jelly-chip>${tag}</jelly-chip>`), `missing tag "${tag}"`);
+  }
 });
 
 test('a post shows a reading time', () => {
@@ -111,15 +142,23 @@ test('the index groups entries under year headings, newest first', () => {
   assert.deepEqual(years, ['2026', '2024']);
 });
 
-test('the index lists published posts', () => {
-  assert.match(SITE, /Hello, world: a first post/);
-  assert.match(SITE, /An older entry/);
+test('the index lists every published post', () => {
+  assert.ok(PUBLISHED.length >= 2, 'need at least two published posts to test grouping');
+  for (const post of PUBLISHED) {
+    assert.ok(SITE.includes(post.title), `index is missing "${post.title}" (${post.file})`);
+  }
 });
 
 test('a post marked draft is excluded from the index but still builds', () => {
-  assert.doesNotMatch(SITE, /A draft nobody should see/);
-  // It still has a page, so a direct link works for previewing.
-  assert.match(read('2026/a-draft/index.html'), /A draft nobody should see/);
+  assert.ok(DRAFTS.length >= 1, 'need at least one draft to test exclusion');
+  for (const post of DRAFTS) {
+    assert.ok(!SITE.includes(post.title), `draft "${post.title}" leaked onto the index`);
+    // It still has a page, so a direct link works for previewing.
+    assert.ok(
+      read(`${post.url}index.html`).includes(post.title),
+      `draft "${post.title}" has no page of its own`,
+    );
+  }
 });
 
 test('the index uses absolute dates', () => {
@@ -153,7 +192,7 @@ test('the reading experience does not depend on a Jelly element', () => {
   // its masthead, its headings and its links.
   const withoutJelly = SITE.replace(/<jelly-[a-z-]+[\s\S]*?<\/jelly-[a-z-]+>/g, '');
   assert.ok(withoutJelly.includes(TITLE));
-  assert.match(withoutJelly, /Hello, world: a first post/);
+  assert.ok(withoutJelly.includes(NEWEST.title));
   assert.match(withoutJelly, /class="index-year/);
 });
 
