@@ -1,13 +1,13 @@
 # ---------------------------------------------------------------------------
 # Identity. These three values are the only ones you need to change.
 # ---------------------------------------------------------------------------
-title:    "Placeholder Wordmark"
-tagline:  "A placeholder tagline"
+title:    "Dex"
+tagline:  "A blog?"
 url:      "https://davedavis.co.uk"
 baseurl:  ""
 
 # Read by jekyll-seo-tag for <meta name="description">.
-description: "A placeholder tagline"
+description: "A long forgotten blog where I'll probably mount some bad projects"
 lang: en
 
 # ---------------------------------------------------------------------------
