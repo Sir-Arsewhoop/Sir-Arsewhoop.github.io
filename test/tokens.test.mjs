@@ -119,6 +119,37 @@ test('the Jelly bridge covers every token that affects what we render', () => {
   }
 });
 
+test('the favicon agrees with the palette in both schemes', () => {
+  // assets/favicon.svg is the one file that must duplicate colour literals: an
+  // external SVG referenced from <link rel="icon"> cannot see the page's custom
+  // properties. So assert the copies match rather than trusting them to.
+  const svg = readFileSync('assets/favicon.svg', 'utf8');
+  const at = svg.indexOf('@media');
+  assert.ok(at > 0, 'favicon.svg must carry its own prefers-color-scheme rule');
+
+  const fill = (block, selector) =>
+    block.match(new RegExp(`${selector}\\s*\\{[^}]*fill:\\s*(#[0-9a-fA-F]{6})`))?.[1]?.toLowerCase();
+
+  const [[, light], [, dark]] = SCHEMES;
+  const pairs = [
+    ['light', svg.slice(0, at), light],
+    ['dark', svg.slice(at), dark],
+  ];
+  for (const [scheme, block, tokens] of pairs) {
+    assert.equal(fill(block, 'rect'), tokens['--bg'], `${scheme}: favicon ground is not --bg`);
+    assert.equal(fill(block, 'path'), tokens['--accent'], `${scheme}: favicon glyph is not --accent`);
+  }
+});
+
+test('the favicon glyph is large enough to read at 16px', () => {
+  // The glyph is scaled about the tile centre. Below roughly 1.1 the shape
+  // collapses at favicon size — the original 1.0 version had a 3px head and was
+  // unidentifiable. See the comment in assets/favicon.svg.
+  const svg = readFileSync('assets/favicon.svg', 'utf8');
+  const scale = Number(svg.match(/scale\(([\d.]+)\)/)?.[1]);
+  assert.ok(scale >= 1.1, `favicon glyph scale is ${scale}, needs at least 1.1 to read at 16px`);
+});
+
 test('no file outside tokens.css contains a colour literal', () => {
   const others = ['assets/css/site.css'];
   for (const path of others) {

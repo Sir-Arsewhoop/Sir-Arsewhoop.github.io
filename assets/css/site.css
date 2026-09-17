@@ -338,3 +338,15 @@ jelly-chip {
   background: var(--bg-lift);
   color: var(--ink-muted);
 }
+
+.favicon-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-block: 0 var(--step);
+}
+
+.favicon-row img {
+  border-radius: 0;
+  flex: none;
+}

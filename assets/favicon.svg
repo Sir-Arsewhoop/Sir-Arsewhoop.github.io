@@ -1,7 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- gruvbox dark0 / light0 and bright_yellow / faded_orange. Duplicated from
-       tokens.css because an external SVG has no access to the page's custom
-       properties. If the palette changes, change these two rules with it. -->
+  <!-- A keyhole, or a chess pawn. The ambiguity is deliberate: escape rooms read
+       the first, games read the second, and neither needs explaining.
+
+       Colours duplicate tokens.css because an external SVG cannot see the page's
+       custom properties. test/tokens.test.mjs asserts the two files agree, so the
+       favicon cannot silently drift from the palette.
+
+       The glyph fills 78% of the tile height. An earlier version used 56% and
+       collapsed into an unreadable blob at 16px, where the head was barely 3px
+       across. Clearance that looks composed at 64px is wasted resolution at 16px,
+       which is the only size most people ever see. Do not shrink it back. -->
   <style>
     rect { fill: #fbf1c7 }
     path { fill: #af3a03 }
@@ -11,5 +19,7 @@
     }
   </style>
   <rect width="32" height="32" rx="7"/>
-  <path d="M9 23V9h3.2v5.6h7.6V9H23v14h-3.2v-5.6h-7.6V23z"/>
+  <g transform="translate(16,16) scale(1.18) translate(-16,-16)">
+    <path d="M16 5.5a6.2 6.2 0 0 0-3.2 11.5L10 26.5h12l-2.8-9.5A6.2 6.2 0 0 0 16 5.5z"/>
+  </g>
 </svg>

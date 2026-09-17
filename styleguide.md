@@ -66,6 +66,33 @@ const tokens = readFileSync('assets/css/tokens.css', 'utf8');
 
 ---
 
+## Favicon
+
+<p class="favicon-row">
+  <img src="{{ '/assets/favicon.svg' | relative_url }}" width="16" height="16" alt="favicon at 16px">
+  <img src="{{ '/assets/favicon.svg' | relative_url }}" width="32" height="32" alt="favicon at 32px">
+  <img src="{{ '/assets/favicon.svg' | relative_url }}" width="64" height="64" alt="favicon at 64px">
+  <span class="swatch__note">16 · 32 · 64</span>
+</p>
+
+A keyhole, or a chess pawn. The ambiguity is deliberate — escape rooms read the
+first, games read the second, and neither needs explaining.
+
+`assets/favicon.svg` is the only file besides `tokens.css` that contains colour
+literals, because an external SVG referenced from `<link rel="icon">` cannot see the
+page's custom properties. `test/tokens.test.mjs` asserts the duplicated values match
+the palette in both schemes, so the icon cannot drift.
+
+**The glyph fills 78% of the tile height, and that number is load-bearing.** An
+earlier version used 56%. At 16px — the only size most people ever see — that left a
+head barely 3px across, and the shape collapsed into an unreadable blob. Clearance
+that looks composed at 64px is wasted resolution at favicon size. A test fails if the
+scale drops below 1.1.
+
+Some clearance still earns its place: past roughly 90% the glyph looks cramped inside
+the rounded corners at the large sizes used for bookmarks and PWA icons. 78% is the
+compromise.
+
 ## Jelly components
 
 Loaded from `jelly-ui.com` and enhancement only. Each is shown twice: as it upgrades,
