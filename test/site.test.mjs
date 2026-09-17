@@ -88,6 +88,26 @@ test('the masthead carries the wordmark and tagline and links home', () => {
   assert.match(POST, /<a href="\/">Placeholder Wordmark<\/a>/);
 });
 
+test('the index groups entries under year headings, newest first', () => {
+  const years = [...SITE.matchAll(/class="index-year[^"]*"[^>]*>(\d{4})</g)].map((m) => m[1]);
+  assert.deepEqual(years, ['2026', '2024']);
+});
+
+test('the index lists published posts', () => {
+  assert.match(SITE, /Hello, world: a first post/);
+  assert.match(SITE, /An older entry/);
+});
+
+test('a post marked draft is excluded from the index but still builds', () => {
+  assert.doesNotMatch(SITE, /A draft nobody should see/);
+  // It still has a page, so a direct link works for previewing.
+  assert.match(read('2026/a-draft/index.html'), /A draft nobody should see/);
+});
+
+test('the index uses absolute dates', () => {
+  assert.match(SITE, /2026 · 09/);
+});
+
 test('no template renders the build clock', () => {
   // `site.time` is Jekyll's build timestamp. Rendering it anywhere tells a
   // visitor how long the site has sat untouched — the one thing the spec's

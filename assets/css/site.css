@@ -220,3 +220,46 @@ img {
   display: flex;
   gap: 1rem;
 }
+
+/* --- front page index ---------------------------------------------------- */
+
+.index-year {
+  padding-block-end: 0.4rem;
+  border-bottom: 1px solid var(--rule);
+  margin-block: calc(var(--step) * 2) var(--step);
+}
+
+.index-entries {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.index-entry + .index-entry {
+  margin-block-start: calc(var(--step) * 1.25);
+}
+
+.index-entry__title {
+  font-size: 1.3rem;
+  margin-block: 0 0.3rem;
+}
+
+.index-entry__title a {
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.index-entry__title a:hover,
+.index-entry__title a:focus-visible {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.index-entry__summary {
+  color: var(--ink-muted);
+  margin-block: 0 0.3rem;
+}
+
+.index-entry .meta {
+  margin-block: 0;
+}

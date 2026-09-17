@@ -1,0 +1,36 @@
+{%- comment -%}
+  Reverse-chronological index grouped by year.
+
+  Grouping exists for a reason: a sparse list under explicit year headings reads
+  as a log with gaps, where a flat list of four items across five years reads as
+  abandoned. Do not replace this with a flat list, and do not add a "latest post"
+  hero above it — a three-year-old entry must never become the whole front page.
+{%- endcomment -%}
+{%- assign published = site.posts | where_exp: "p", "p.draft != true" -%}
+{%- assign years = published | group_by_exp: "p", "p.date | date: '%Y'" -%}
+
+<div class="index">
+  {%- for year in years %}
+  <section>
+    <h2 class="index-year eyebrow">{{ year.name }}</h2>
+    <ul class="index-entries">
+      {%- for post in year.items %}
+      <li class="index-entry">
+        <h3 class="index-entry__title">
+          <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        </h3>
+        {%- if post.summary %}
+        <p class="index-entry__summary">{{ post.summary }}</p>
+        {%- endif %}
+        <p class="meta">
+          <span>{{ post.date | date: "%Y · %m" }}</span>
+          {%- for tag in post.tags %}
+          <span>{{ tag }}</span>
+          {%- endfor %}
+        </p>
+      </li>
+      {%- endfor %}
+    </ul>
+  </section>
+  {%- endfor %}
+</div>
