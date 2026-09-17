@@ -1,0 +1,39 @@
+# ---------------------------------------------------------------------------
+# Identity. These three values are the only ones you need to change.
+# ---------------------------------------------------------------------------
+title:    "Placeholder Wordmark"
+tagline:  "A placeholder tagline"
+url:      "https://example.com"
+baseurl:  ""
+
+# Read by jekyll-seo-tag for <meta name="description">.
+description: "A placeholder tagline"
+lang: en
+
+# ---------------------------------------------------------------------------
+# Build. No `theme:` key — every layout in this repo is ours, so nothing is
+# inherited and nothing external can restyle the site.
+# ---------------------------------------------------------------------------
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+permalink: /:year/:title/
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - package.json
+  - docs/
+  - test/
+  - scripts/
+  - vendor/

@@ -1,0 +1,9 @@
+{
+  "name": "homepage",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/",
+    "serve": "node scripts/serve.mjs"
+  }
+}

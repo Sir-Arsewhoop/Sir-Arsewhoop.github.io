@@ -5,3 +5,5 @@ _site/
 Gemfile.lock
 .bundle/
 vendor/
+node_modules/
+package-lock.json
