@@ -85,19 +85,6 @@ goes dark until someone notices. `CNAME.example` is an inert template for refere
 If you ever move the domain, three things change together: `CNAME`, `url:` in
 `_config.yml`, and the DNS records at the registrar.
 
-### Known trap when testing from home
-
-The router at `[redacted-internal-domain]` appends its search suffix to bare lookups, so
-`davedavis.co.uk` resolves as `davedavis.co.uk.[redacted-internal-domain]` → `[redacted-internal-ip]` on the
-LAN. The site looks dead from inside the network while being perfectly fine outside
-it. Confirm before panicking:
-
-```bash
-curl -s -o /dev/null -w '%{http_code}\n' --resolve davedavis.co.uk:443:185.199.108.153 https://davedavis.co.uk/
-```
-
-A `200` means the site is fine and the problem is local DNS.
-
 ## Standalone pages
 
 A `.md` at the repo root with `layout: page` and a `permalink`. See `about.md`.
