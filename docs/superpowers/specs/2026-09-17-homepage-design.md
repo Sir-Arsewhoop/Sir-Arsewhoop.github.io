@@ -23,6 +23,10 @@ it must be extendable later without a rewrite.
    whose component look-and-feel is wanted without its site design.
 4. **Palette:** gruvbox (morhetz), which the owner nominated via Zed's theme of the
    same name.
+5. **Publishing must require no local toolchain.** Adding a post must be possible
+   entirely from github.com's web editor, on any device, with no checkout, no Ruby
+   and no build step run by the owner. Local tooling may exist as a convenience but
+   must never sit on the publish path.
 
 ## Decisions
 
@@ -40,6 +44,26 @@ drop-a-markdown-file requirement, which is the point of the project.
 A Jekyll theme is only `_layouts` + `_includes` + CSS. With `theme:` omitted from
 `_config.yml` and our own layouts supplied, nothing is inherited and the rendered
 HTML is entirely ours. The generator choice constrains plumbing, not appearance.
+
+**This decision also satisfies constraint 5.** The build runs on GitHub's servers on
+push to the source branch, so committing from the web editor publishes the site with
+no local toolchain involved. GitHub's own guidance: "If you do not need any control
+over the build process for your site, we recommend that you publish your site when
+changes are pushed to a specific branch." Branch-based publishing is current, not
+deprecated, and Actions are documented as the escape hatch for builds other than
+Jekyll.
+
+An Actions-based build would also publish on push, so it does not fail constraint 5
+outright — it fails constraint 1. When a workflow breaks, Pages keeps serving the
+last successful build: the site looks correct, the new post silently never appears,
+and the only evidence is in a tab the owner has no reason to open. Known rot
+mechanisms, all observed in practice: runner Node runtimes sunset beneath pinned
+action majors; runner images retired (`ubuntu-20.04`) or silently moved
+(`ubuntu-latest`); workflow commands deprecated then disabled (`set-output`,
+`save-state`); `GITHUB_TOKEN` default permissions narrowed, requiring explicit
+`pages: write` and `id-token: write`; registry packages yanked. Expect one
+intervention every two to three years. With branch-based publishing there is no
+workflow to rot.
 
 ### D2 — Plugins limited to GitHub's allowlist
 
@@ -174,12 +198,18 @@ The frontmatter contract. Adding an entry touches exactly one file:
 
 ```yaml
 ---
-title: A thing I made
+title: "A thing I made"
 date: 2026-09-17
 tags: [hardware, esp32]
-summary: One line, shown on the index.
+summary: "One line, shown on the index."
 ---
 ```
+
+Titles and summaries are quoted in the template by default. Neither needs quoting in
+YAML most of the time, but the one case that breaks a build — a colon in the text —
+is common in post titles, and an unquoted title is the likeliest cause of a post
+silently failing to publish. Quoting unconditionally costs nothing and removes the
+class of error.
 
 - `title` and `date` required. `date` is also encoded in the filename
   (`_posts/YYYY-MM-DD-slug.md`) per Jekyll's convention.
@@ -227,12 +257,33 @@ Requirements, not decoration — these exist because the site is expected to sit
 - **Nothing renders the build date**, so the site never advertises how long it has
   been since the last commit.
 
-## Local preview
+## Publishing and preview
 
-The machine has Ruby (installed 2026-09-17), Git, Node 20, Docker and `gh`. A
-`Gemfile` pinning the `github-pages` gem makes local output match GitHub's build, so
-`bundle exec jekyll serve` is the preview loop. Docker remains as a fallback if the
-native toolchain gives trouble on Windows.
+**Publishing — the supported path, no local toolchain.** Create the file in
+github.com's web editor under `_posts/`, paste the template from the README, commit
+to the source branch. GitHub builds and redeploys. Works from any device with a
+browser. This is the primary path, not a fallback.
+
+**Preview — optional, local only.** The machine has Ruby (installed 2026-09-17),
+Git, Node 20, Docker and `gh`. A `Gemfile` pinning the `github-pages` gem makes local
+output match GitHub's build, so `bundle exec jekyll serve` gives a preview loop when
+working from this machine. Nothing about publishing depends on it. Docker is a
+fallback if the native Windows toolchain gives trouble.
+
+### Frontmatter as the real failure mode
+
+With the toolchain off the publish path, the remaining way a post silently fails to
+appear is malformed YAML frontmatter typed without a preview — an unquoted title
+containing a colon being the classic. GitHub emails a "page build failed" notice,
+which is thin protection for a site checked twice a year.
+
+Mitigations, all cheap:
+
+- Only two required fields, `title` and `date`.
+- The README's copy-paste template quotes the title by default, so
+  `title: "Thing: with a colon"` is the shape the owner's muscle memory learns.
+- The README lives in the repo root, one tap from the web editor on the same device.
+- `_posts/2026-09-17-hello.md` ships as a working reference to copy.
 
 ## Verification
 
