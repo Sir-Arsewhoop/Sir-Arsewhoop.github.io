@@ -116,11 +116,13 @@ Measured contrast against the body background:
 
 | Pairing | Ratio | Verdict |
 | --- | --- | --- |
-| `#ebdbb2` on `#282828` | 11.0:1 | AAA |
-| `#fabd2f` on `#282828` | 8.8:1 | AAA |
-| `#3c3836` on `#fbf1c7` | 11.2:1 | AAA |
-| `#b57614` on `#fbf1c7` | 3.4:1 | **fails AA** |
+| `#ebdbb2` on `#282828` | 10.8:1 | AAA |
+| `#fabd2f` on `#282828` | 8.7:1 | AAA |
+| `#3c3836` on `#fbf1c7` | 10.2:1 | AAA |
+| `#b57614` on `#fbf1c7` | 3.3:1 | **fails AA** |
 | `#af3a03` on `#fbf1c7` | 5.4:1 | AA |
+| `#928374` on `#fbf1c7` | 3.2:1 | **fails AA** |
+| `#928374` on `#282828` | 4.0:1 | **fails AA** |
 
 Light mode therefore uses `faded_orange #af3a03` as its accent where gruvbox's own
 symmetry would suggest `faded_yellow #b57614`. The substitution is within the same
@@ -134,20 +136,30 @@ stylesheet names a hex. Retheming later is one file.
 
 ```css
 :root {                      /* light */
-  --bg:     #fbf1c7;  --bg-sunk:   #f2e5bc;  --bg-lift:   #ebdbb2;
-  --ink:    #3c3836;  --ink-muted: #665c54;  --ink-faint: #928374;
-  --rule:   #d5c4a1;  --accent:    #af3a03;  --accent-quiet: #b57614;
+  --bg:     #fbf1c7;  --bg-sunk: #f2e5bc;  --bg-lift: #ebdbb2;
+  --ink:    #3c3836;  --ink-muted: #665c54;
+  --rule:   #d5c4a1;  --accent:  #af3a03;  --on-accent: #fbf1c7;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:   #282828;  --bg-sunk:   #1d2021;  --bg-lift:   #3c3836;
-    --ink:  #ebdbb2;  --ink-muted: #a89984;  --ink-faint: #928374;
-    --rule: #504945;  --accent:    #fabd2f;  --accent-quiet: #fe8019;
+    --bg:   #282828;  --bg-sunk: #1d2021;  --bg-lift: #3c3836;
+    --ink:  #ebdbb2;  --ink-muted: #a89984;
+    --rule: #504945;  --accent:  #fabd2f;  --on-accent: #282828;
   }
 }
 ```
 
-Jelly's own tokens are mapped onto the same semantic names in the same two blocks,
+Eight tokens, no more. `--ink-faint` (`#928374`, gruvbox `gray`) and `--accent-quiet`
+were both in an earlier draft of this section and are cut: measured at 3.2:1/4.0:1 and
+3.3:1 respectively, neither can legally carry text, and a token that looks like a text
+colour but is not one is exactly the trap this project cannot afford. A third ink level
+or a second accent can be added later — the contrast test will refuse a failing value.
+
+`--on-accent` is the text colour for content sitting on `--accent` (Jelly buttons,
+chips). It happens to equal `--bg` in both schemes; it is defined separately so the
+relationship is asserted rather than assumed.
+
+Jelly's own tokens are mapped onto these same semantic names in the same two blocks,
 per D4.
 
 ### D7 — Typography
@@ -288,7 +300,22 @@ Mitigations, all cheap:
 ## Verification
 
 No CI. A GitHub Action is precisely the thing that rots unattended, which would
-undercut D1. Verification is a checklist in `README.md` for future-you:
+undercut D1.
+
+There is, however, a local test harness — `node --test test/`, using Node's built-in
+runner with zero npm dependencies, so there is no lockfile and nothing to rot. It is
+a development tool only and never touches the publish path. It exists because
+constraint 2 says the owner is error-prone on web work, and the most valuable thing
+it does is make D5 structural: `test/tokens.test.mjs` parses `tokens.css`, computes
+WCAG relative luminance, and fails if any ink or accent token drops below its
+threshold against its own scheme's background. An inaccessible palette becomes a
+failing test rather than a thing to remember.
+
+`test/tokens.test.mjs` reads CSS only and runs anywhere. `test/site.test.mjs` builds
+the site first and therefore needs Ruby — which is fine, because like the preview it
+is a convenience, not a gate.
+
+On top of the harness, a checklist in `README.md` for future-you:
 
 1. Add the post, run `bundle exec jekyll serve`.
 2. Check both colour schemes (OS toggle, or devtools emulation).
