@@ -90,3 +90,18 @@ test('both schemes define the same token names', () => {
   const [[, light], [, dark]] = SCHEMES;
   assert.deepEqual(Object.keys(light).sort(), Object.keys(dark).sort());
 });
+
+test('no file outside tokens.css contains a colour literal', () => {
+  const others = ['assets/css/site.css'];
+  for (const path of others) {
+    const source = readFileSync(path, 'utf8')
+      // Strip comments first — a comment may legitimately name a gruvbox hex
+      // when explaining which token to reach for.
+      .replace(/\/\*[\s\S]*?\*\//g, '');
+    assert.doesNotMatch(
+      source,
+      /#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(/,
+      `${path} contains a colour literal; use var(--token) instead`,
+    );
+  }
+});

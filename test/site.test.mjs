@@ -45,3 +45,18 @@ test('the site builds and the front page carries the wordmark', () => {
 test('the document declares its language', () => {
   assert.match(SITE, /<html lang="en">/);
 });
+
+test('the page links both stylesheets tokens-first, and a favicon', () => {
+  const tokensAt = SITE.indexOf('tokens.css');
+  const siteAt = SITE.indexOf('site.css');
+  assert.ok(tokensAt > -1, 'tokens.css is not linked');
+  assert.ok(siteAt > -1, 'site.css is not linked');
+  assert.ok(tokensAt < siteAt, 'tokens.css must be linked before site.css');
+  assert.match(SITE, /rel="icon"[^>]*favicon\.svg/);
+});
+
+test('webfonts declare a fallback that holds the layout', () => {
+  const css = readFileSync('assets/css/site.css', 'utf8');
+  assert.match(css, /--font-display:[^;]*\bGeorgia\b/);
+  assert.match(css, /--font-mono:[^;]*\bui-monospace\b/);
+});

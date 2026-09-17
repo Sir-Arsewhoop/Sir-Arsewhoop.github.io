@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- gruvbox dark0 / light0 and bright_yellow / faded_orange. Duplicated from
+       tokens.css because an external SVG has no access to the page's custom
+       properties. If the palette changes, change these two rules with it. -->
+  <style>
+    rect { fill: #fbf1c7 }
+    path { fill: #af3a03 }
+    @media (prefers-color-scheme: dark) {
+      rect { fill: #282828 }
+      path { fill: #fabd2f }
+    }
+  </style>
+  <rect width="32" height="32" rx="7"/>
+  <path d="M9 23V9h3.2v5.6h7.6V9H23v14h-3.2v-5.6h-7.6V23z"/>
+</svg>
