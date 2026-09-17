@@ -24,16 +24,24 @@
    * shadow boundaries, so :root is enough — no per-component wiring.
    *
    * These are var() references, not literals, so they follow the scheme
-   * automatically and need no second copy in the dark block below.            */
-  --jelly-color-background-default:   var(--bg);
-  --jelly-color-background-surface:   var(--bg-lift);
-  --jelly-color-background-muted:     var(--bg-sunk);
-  --jelly-color-background-accent:    var(--accent);
-  --jelly-color-foreground-default:   var(--ink);
-  --jelly-color-foreground-muted:     var(--ink-muted);
-  --jelly-color-foreground-on-accent: var(--on-accent);
-  --jelly-color-border-default:       var(--rule);
-  --jelly-color-border-focus:         var(--accent);
+   * automatically and need no second copy in the dark block below.
+   *
+   * Bridge every token that affects something we render. A Jelly token left
+   * unbridged keeps Jelly's own default and shows up as an off-palette blue-grey
+   * — which is what --jelly-color-background-neutral did until it was added
+   * here, because a default <jelly-chip> paints its body from `neutral`, not
+   * from `surface`. test/tokens.test.mjs asserts this list stays complete.       */
+  --jelly-color-background-default:     var(--bg);
+  --jelly-color-background-surface:     var(--bg-lift);
+  --jelly-color-background-muted:       var(--bg-sunk);
+  --jelly-color-background-neutral:     var(--bg-lift);
+  --jelly-color-background-accent:      var(--accent);
+  --jelly-color-foreground-default:     var(--ink);
+  --jelly-color-foreground-muted:       var(--ink-muted);
+  --jelly-color-foreground-on-neutral:  var(--ink);
+  --jelly-color-foreground-on-accent:   var(--on-accent);
+  --jelly-color-border-default:         var(--rule);
+  --jelly-color-border-focus:           var(--accent);
 }
 
 @media (prefers-color-scheme: dark) {

@@ -108,6 +108,37 @@ test('the index uses absolute dates', () => {
   assert.match(SITE, /2026 · 09/);
 });
 
+test('Jelly loads as a module from its CDN', () => {
+  assert.match(
+    SITE,
+    /<script type="module" src="https:\/\/jelly-ui\.com\/package\.js"><\/script>/,
+  );
+});
+
+test('every Jelly element used has a :not(:defined) fallback', () => {
+  const css = readFileSync('assets/css/site.css', 'utf8');
+  const used = new Set(
+    [...SITE.matchAll(/<(jelly-[a-z-]+)/g)].map((m) => m[1]),
+  );
+  assert.ok(used.size > 0, 'no Jelly elements are used, so this test proves nothing');
+  for (const element of used) {
+    assert.match(
+      css,
+      new RegExp(`${element}:not\\(:defined\\)`),
+      `${element} has no :not(:defined) fallback — a dead CDN would break it`,
+    );
+  }
+});
+
+test('the reading experience does not depend on a Jelly element', () => {
+  // Strip every Jelly element and its content, then check the page still has
+  // its masthead, its headings and its links.
+  const withoutJelly = SITE.replace(/<jelly-[a-z-]+[\s\S]*?<\/jelly-[a-z-]+>/g, '');
+  assert.match(withoutJelly, /Placeholder Wordmark/);
+  assert.match(withoutJelly, /Hello, world: a first post/);
+  assert.match(withoutJelly, /class="index-year/);
+});
+
 test('no template renders the build clock', () => {
   // `site.time` is Jekyll's build timestamp. Rendering it anywhere tells a
   // visitor how long the site has sat untouched — the one thing the spec's

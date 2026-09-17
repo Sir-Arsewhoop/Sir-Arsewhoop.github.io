@@ -91,6 +91,34 @@ test('both schemes define the same token names', () => {
   assert.deepEqual(Object.keys(light).sort(), Object.keys(dark).sort());
 });
 
+test('the Jelly bridge covers every token that affects what we render', () => {
+  // A Jelly token left unbridged silently keeps Jelly's own default and renders
+  // off-palette. That is not visible to any assertion about our own CSS — a
+  // default <jelly-chip> paints its body on a canvas from
+  // --jelly-color-background-neutral, so omitting that one produced a blue-grey
+  // pill on a gruvbox page and nothing failed. This list is the guard.
+  const REQUIRED_BRIDGE = [
+    '--jelly-color-background-default',
+    '--jelly-color-background-surface',
+    '--jelly-color-background-muted',
+    '--jelly-color-background-neutral',
+    '--jelly-color-background-accent',
+    '--jelly-color-foreground-default',
+    '--jelly-color-foreground-muted',
+    '--jelly-color-foreground-on-neutral',
+    '--jelly-color-foreground-on-accent',
+    '--jelly-color-border-default',
+    '--jelly-color-border-focus',
+  ];
+  for (const token of REQUIRED_BRIDGE) {
+    assert.match(
+      css,
+      new RegExp(`${token}:\\s*var\\(--[a-z-]+\\)`),
+      `${token} is not bridged to one of our tokens`,
+    );
+  }
+});
+
 test('no file outside tokens.css contains a colour literal', () => {
   const others = ['assets/css/site.css'];
   for (const path of others) {

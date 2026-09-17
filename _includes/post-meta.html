@@ -9,7 +9,7 @@
 <p class="meta">
   <span>{{ p.date | date: "%-d %B %Y" }}</span>
   {%- for tag in p.tags %}
-  <span>{{ tag }}</span>
+  <jelly-chip>{{ tag }}</jelly-chip>
   {%- endfor %}
   {%- if include.reading_time %}
   <span>{{ p.content | number_of_words | divided_by: 200 | plus: 1 }} min</span>
