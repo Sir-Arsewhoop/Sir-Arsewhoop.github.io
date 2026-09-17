@@ -160,6 +160,23 @@ test('the style guide shows both Jelly states', () => {
   assert.match(guide, /class="meta force-undefined"/);
 });
 
+test('the README carries a frontmatter template with the title quoted', () => {
+  const readme = readFileSync('README.md', 'utf8');
+  assert.match(readme, /title:\s*"/, 'the template must quote the title');
+  assert.match(readme, /date:\s*\d{4}-\d{2}-\d{2}/);
+  assert.match(readme, /_posts\/YYYY-MM-DD-slug\.md/);
+});
+
+test('the README explains publishing without a local toolchain', () => {
+  const readme = readFileSync('README.md', 'utf8');
+  assert.match(readme, /web editor/i);
+  assert.match(readme, /no .{0,20}(toolchain|install)/i);
+});
+
+test('the about page builds', () => {
+  assert.match(read('about/index.html'), /Placeholder Wordmark/);
+});
+
 test('no template renders the build clock', () => {
   // `site.time` is Jekyll's build timestamp. Rendering it anywhere tells a
   // visitor how long the site has sat untouched — the one thing the spec's
