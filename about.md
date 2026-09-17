@@ -4,7 +4,10 @@ title: "About"
 permalink: /about/
 ---
 
-Placeholder. Replace this with a paragraph or two about yourself.
+I'm an engineer, making games. Also making a mess.
 
-Kept deliberately short and free of anything time-sensitive — no "currently working
-on", no "recently", no job title that will quietly go stale.
+
+
+I'm English by birth, and stupid by nature. However, if you were to gather
+the inhabitants of an an average village, I will have played more escape games
+than their combined total. And I don't fail them.
