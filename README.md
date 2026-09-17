@@ -39,25 +39,32 @@ GitHub emails a "page build failed" notice to the account address. The build log
 also at **Actions → pages build and deployment** in this repo. It is almost always
 the frontmatter — most often an unquoted title.
 
-## Pointing a domain at it
+## The domain
 
-There is no `CNAME` file in this repo, deliberately. A `CNAME` containing a domain
-you do not control sets that as the Pages custom domain, and `sir-arsewhoop.github.io`
-then 301-redirects to it — the site goes dark until someone notices. `CNAME.example`
-is an inert template.
+Live at **https://davedavis.co.uk**, apex, HTTPS enforced. `CNAME` holds the domain
+and `_config.yml`'s `url:` matches it — both must agree, or `jekyll-seo-tag` emits a
+canonical URL pointing somewhere you do not serve.
 
-When you have the domain:
+Set the domain through **Settings → Pages → Custom domain**, which writes `CNAME`
+for you. Never hand-write a `CNAME` for a domain you do not control: Pages takes it
+at face value, `sir-arsewhoop.github.io` starts 301-redirecting there, and the site
+goes dark until someone notices. `CNAME.example` is an inert template for reference.
 
-1. **Settings → Pages → Custom domain**, enter it, Save. GitHub writes the real
-   `CNAME` file into the repo for you — you do not create it by hand.
-2. Point DNS at GitHub: four `A` records at the apex, or a `CNAME` record to
-   `sir-arsewhoop.github.io` for a `www` subdomain. GitHub's custom-domain docs
-   carry the current apex IPs — look them up rather than copying them from anywhere,
-   including here.
-3. Tick **Enforce HTTPS** once the certificate is issued (can take a few minutes).
-4. Change `url:` in `_config.yml` to match. Until you do, every page emits
-   `<link rel="canonical" href="https://example.com/">`, which is wrong and is the
-   one placeholder that matters to search engines.
+If you ever move the domain, three things change together: `CNAME`, `url:` in
+`_config.yml`, and the DNS records at the registrar.
+
+### Known trap when testing from home
+
+The router at `[redacted-internal-domain]` appends its search suffix to bare lookups, so
+`davedavis.co.uk` resolves as `davedavis.co.uk.[redacted-internal-domain]` → `[redacted-internal-ip]` on the
+LAN. The site looks dead from inside the network while being perfectly fine outside
+it. Confirm before panicking:
+
+```bash
+curl -s -o /dev/null -w '%{http_code}\n' --resolve davedavis.co.uk:443:185.199.108.153 https://davedavis.co.uk/
+```
+
+A `200` means the site is fine and the problem is local DNS.
 
 ## Standalone pages
 
