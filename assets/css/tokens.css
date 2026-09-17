@@ -1,0 +1,51 @@
+/* ---------------------------------------------------------------------------
+ * The only file in this repository allowed to contain a colour literal.
+ *
+ * Palette: gruvbox (github.com/morhetz/gruvbox), values from colors/gruvbox.vim.
+ * Every value here is asserted by test/tokens.test.mjs — change one and the
+ * test tells you immediately whether it is still legible. Adding a ninth token
+ * requires adding its assertion in the same commit.
+ * ------------------------------------------------------------------------- */
+
+:root {
+  /* light — gruvbox light0 / light1 / light2, dark1, faded_orange */
+  --bg:        #fbf1c7;  /* light0                                          */
+  --bg-sunk:   #f2e5bc;  /* light0_soft — recessed surfaces, code blocks    */
+  --bg-lift:   #ebdbb2;  /* light1     — raised surfaces, chips             */
+  --ink:       #3c3836;  /* dark1                            10.2:1 on --bg */
+  --ink-muted: #665c54;  /* dark3                             5.7:1 on --bg */
+  --rule:      #d5c4a1;  /* light2     — hairlines, borders                 */
+  --accent:    #af3a03;  /* faded_orange                      5.4:1 on --bg */
+  --on-accent: #fbf1c7;  /* text on --accent              5.4:1 on --accent */
+
+  /* Bridge to Jelly UI. Every Jelly component resolves --jelly-accent, which
+   * itself falls back to --jelly-color-background-accent, so setting the theme
+   * tokens here retints the whole library per scheme. Custom properties cross
+   * shadow boundaries, so :root is enough — no per-component wiring.
+   *
+   * These are var() references, not literals, so they follow the scheme
+   * automatically and need no second copy in the dark block below.            */
+  --jelly-color-background-default:   var(--bg);
+  --jelly-color-background-surface:   var(--bg-lift);
+  --jelly-color-background-muted:     var(--bg-sunk);
+  --jelly-color-background-accent:    var(--accent);
+  --jelly-color-foreground-default:   var(--ink);
+  --jelly-color-foreground-muted:     var(--ink-muted);
+  --jelly-color-foreground-on-accent: var(--on-accent);
+  --jelly-color-border-default:       var(--rule);
+  --jelly-color-border-focus:         var(--accent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* dark — gruvbox dark0 / dark0_hard / dark1, light1, bright_yellow */
+    --bg:        #282828;  /* dark0                                          */
+    --bg-sunk:   #1d2021;  /* dark0_hard                                     */
+    --bg-lift:   #3c3836;  /* dark1                                          */
+    --ink:       #ebdbb2;  /* light1                         10.8:1 on --bg  */
+    --ink-muted: #a89984;  /* light4                          5.5:1 on --bg  */
+    --rule:      #504945;  /* dark2                                          */
+    --accent:    #fabd2f;  /* bright_yellow                   8.7:1 on --bg  */
+    --on-accent: #282828;  /* text on --accent            8.7:1 on --accent  */
+  }
+}
