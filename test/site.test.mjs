@@ -139,6 +139,27 @@ test('the reading experience does not depend on a Jelly element', () => {
   assert.match(withoutJelly, /class="index-year/);
 });
 
+test('the style guide shows a swatch for every token', () => {
+  const guide = read('styleguide/index.html');
+  const tokens = [...readFileSync('assets/css/tokens.css', 'utf8')
+    .matchAll(/(--[a-z0-9-]+)\s*:\s*#[0-9a-fA-F]{6}\s*;/g)]
+    .map((m) => m[1]);
+  const unique = [...new Set(tokens)];
+  assert.ok(unique.length === 8, `expected 8 tokens, found ${unique.length}`);
+  for (const token of unique) {
+    assert.ok(
+      guide.includes(token),
+      `${token} has no swatch in the style guide`,
+    );
+  }
+});
+
+test('the style guide shows both Jelly states', () => {
+  const guide = read('styleguide/index.html');
+  assert.match(guide, /<jelly-chip>/);
+  assert.match(guide, /class="meta force-undefined"/);
+});
+
 test('no template renders the build clock', () => {
   // `site.time` is Jekyll's build timestamp. Rendering it anywhere tells a
   // visitor how long the site has sat untouched — the one thing the spec's

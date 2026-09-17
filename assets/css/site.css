@@ -292,3 +292,49 @@ jelly-chip:not(:defined) {
 jelly-chip {
   vertical-align: baseline;
 }
+
+/* --- style guide --------------------------------------------------------- */
+
+.swatches {
+  list-style: none;
+  margin: 0 0 var(--step);
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.swatch {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.swatch__chip {
+  inline-size: 2.5rem;
+  block-size: 1.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--rule);
+  flex: none;
+}
+
+.swatch__note {
+  color: var(--ink-muted);
+}
+
+/* Mirrors jelly-chip:not(:defined) exactly, so the style guide can show the
+ * fallback state on a page where Jelly has in fact loaded. If you change the
+ * fallback above, change this with it. */
+.force-undefined .as-chip {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 0.3em 0.6em;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--bg-lift);
+  color: var(--ink-muted);
+}
