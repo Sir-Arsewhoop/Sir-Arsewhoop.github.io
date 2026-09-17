@@ -1,0 +1,17 @@
+{%- comment -%}
+  Metadata row for a post. Pass a post explicitly from a loop:
+      {% include post-meta.html post=post %}
+  or omit it on a post page, where it falls back to `page`.
+
+  Dates are absolute. Never introduce a relative format here.
+{%- endcomment -%}
+{%- assign p = include.post | default: page -%}
+<p class="meta">
+  <span>{{ p.date | date: "%-d %B %Y" }}</span>
+  {%- for tag in p.tags %}
+  <span>{{ tag }}</span>
+  {%- endfor %}
+  {%- if include.reading_time %}
+  <span>{{ p.content | number_of_words | divided_by: 200 | plus: 1 }} min</span>
+  {%- endif %}
+</p>

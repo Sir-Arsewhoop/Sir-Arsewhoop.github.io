@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 
 // Jekyll runs in a container. Ruby's native-gem toolchain does not build on
 // this Windows machine (racc fails: RubyInstaller's MSYS2 component is absent
@@ -59,4 +59,52 @@ test('webfonts declare a fallback that holds the layout', () => {
   const css = readFileSync('assets/css/site.css', 'utf8');
   assert.match(css, /--font-display:[^;]*\bGeorgia\b/);
   assert.match(css, /--font-mono:[^;]*\bui-monospace\b/);
+});
+
+const POST = read('2026/hello/index.html');
+
+test('a post renders its title, absolute date and tags', () => {
+  assert.match(POST, /Hello, world: a first post/);
+  assert.match(POST, /17 September 2026/);
+  assert.match(POST, /meta/);
+  assert.match(POST, /example/);
+});
+
+test('a post shows a reading time', () => {
+  assert.match(POST, /\d+ min/);
+});
+
+test('no page uses a relative time string', () => {
+  for (const html of [SITE, POST]) {
+    assert.doesNotMatch(
+      html,
+      /\b\d+\s+(seconds?|minutes?|hours?|days?|weeks?|months?|years?)\s+ago\b/i,
+    );
+  }
+});
+
+test('the masthead carries the wordmark and tagline and links home', () => {
+  assert.match(POST, /A placeholder tagline/);
+  assert.match(POST, /<a href="\/">Placeholder Wordmark<\/a>/);
+});
+
+test('no template renders the build clock', () => {
+  // `site.time` is Jekyll's build timestamp. Rendering it anywhere tells a
+  // visitor how long the site has sat untouched — the one thing the spec's
+  // neglect-proofing section forbids outright. Checked against the Liquid
+  // source, not the output: by the time it reaches HTML it is just a date and
+  // is indistinguishable from a legitimate one.
+  for (const dir of ['_layouts', '_includes']) {
+    for (const file of readdirSync(dir)) {
+      const source = readFileSync(`${dir}/${file}`, 'utf8')
+        // Liquid comments never reach the output, so a template documenting
+        // this very rule must not trip it.
+        .replace(/\{%-?\s*comment\s*-?%\}[\s\S]*?\{%-?\s*endcomment\s*-?%\}/g, '');
+      assert.doesNotMatch(
+        source,
+        /site\.time/,
+        `${dir}/${file} renders the build clock`,
+      );
+    }
+  }
 });

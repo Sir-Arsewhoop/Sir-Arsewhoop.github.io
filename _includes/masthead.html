@@ -1,3 +1,16 @@
+{%- comment -%}
+  Deliberately carries no "latest", "recently" or "currently" copy, and never
+  renders site.time. The masthead must read the same on the day it is built and
+  four years later.
+{%- endcomment -%}
 <header class="masthead">
-  <p class="masthead__name"><a href="{{ '/' | relative_url }}">{{ site.title }}</a></p>
+  <div>
+    <p class="masthead__name"><a href="{{ '/' | relative_url }}">{{ site.title }}</a></p>
+    <p class="masthead__tagline">{{ site.tagline }}</p>
+  </div>
+  <nav class="masthead__nav">
+    <a href="{{ '/about/' | relative_url }}">About</a>
+    <a href="{{ '/styleguide/' | relative_url }}">Style</a>
+    <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+  </nav>
 </header>
