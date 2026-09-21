@@ -95,7 +95,18 @@ Pages do not appear on the index; link them from `_includes/masthead.html`.
 - `assets/css/tokens.css` — the eight colour tokens, light and dark. **The only file
   in the repo allowed to contain a colour literal.**
 - `assets/css/site.css` — everything else. Always `var(--token)`, never a hex.
-- `/styleguide/` — every token and element rendered live. Read this first.
+- `/styleguide/` — every token and element rendered live, plus which markdown
+  syntax works and which does not. Read this first.
+
+## Markdown
+
+kramdown with GFM input, the GitHub Pages default. Footnotes, tables, task lists,
+strikethrough, definition lists, abbreviations, attribute lists and syntax
+highlighting all work. Bare URLs do **not** auto-link — wrap them in `<>` or use
+`[text](url)`. Emoji shortcodes and maths need plugins that are not installed.
+
+`/styleguide/` renders every one of those live, so it is the answer to "does X work",
+not this list.
 
 ## Working locally (optional)
 

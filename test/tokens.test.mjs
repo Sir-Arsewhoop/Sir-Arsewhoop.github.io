@@ -45,13 +45,29 @@ const REQUIRED = [
   '--bg', '--bg-sunk', '--bg-lift',
   '--ink', '--ink-muted',
   '--rule', '--accent', '--on-accent',
+  // Syntax highlighting. Code is body-sized text, so these carry the same
+  // contrast obligation as any other text colour — see the --syn-* assertion
+  // below. Comments are not listed: they reuse --ink-muted deliberately,
+  // because gruvbox gray measures 4.0:1 and cannot carry text.
+  '--syn-keyword', '--syn-string', '--syn-name', '--syn-number',
 ];
 
 // --- the guarantees --------------------------------------------------------
 
 for (const [scheme, tokens] of SCHEMES) {
-  test(`${scheme}: defines exactly the eight agreed tokens`, () => {
+  test(`${scheme}: defines exactly the agreed tokens, no more`, () => {
     assert.deepEqual(Object.keys(tokens).sort(), [...REQUIRED].sort());
+  });
+
+  test(`${scheme}: every syntax token clears AA against --bg`, () => {
+    for (const [name, value] of Object.entries(tokens)) {
+      if (!name.startsWith('--syn-')) continue;
+      const ratio = contrast(value, tokens['--bg']);
+      assert.ok(
+        ratio >= 4.5,
+        `${name} (${value}) on --bg (${tokens['--bg']}) is ${ratio.toFixed(2)}:1, needs 4.5:1`,
+      );
+    }
   });
 
   test(`${scheme}: every ink token clears AA against --bg`, () => {

@@ -27,7 +27,17 @@ test rather than shipping.
   <li class="swatch"><span class="swatch__chip" style="background: var(--rule)"></span><code>--rule</code><span class="swatch__note">hairlines, borders</span></li>
   <li class="swatch"><span class="swatch__chip" style="background: var(--accent)"></span><code>--accent</code><span class="swatch__note">links, focus rings</span></li>
   <li class="swatch"><span class="swatch__chip" style="background: var(--on-accent)"></span><code>--on-accent</code><span class="swatch__note">text on --accent</span></li>
+  <li class="swatch"><span class="swatch__chip" style="background: var(--syn-keyword)"></span><code>--syn-keyword</code><span class="swatch__note">code: keywords, operators</span></li>
+  <li class="swatch"><span class="swatch__chip" style="background: var(--syn-string)"></span><code>--syn-string</code><span class="swatch__note">code: strings</span></li>
+  <li class="swatch"><span class="swatch__chip" style="background: var(--syn-name)"></span><code>--syn-name</code><span class="swatch__note">code: names, functions</span></li>
+  <li class="swatch"><span class="swatch__chip" style="background: var(--syn-number)"></span><code>--syn-number</code><span class="swatch__note">code: numbers</span></li>
 </ul>
+
+Code is body-sized text, so the four syntax colours carry the same 4.5:1 obligation
+as everything else. Three gruvbox syntax colours fail it and are substituted with the
+nearest passing member of the same family — `faded_green` 4.3:1, `faded_aqua` 4.4:1,
+and `bright_red` 4.3:1. Comments use `--ink-muted` rather than gruvbox `gray`, which
+measures 4.0:1 and cannot legally carry text.
 
 ## Type
 
@@ -63,6 +73,89 @@ const tokens = readFileSync('assets/css/tokens.css', 'utf8');
 | --- | --- |
 | Table cell | Table cell |
 | Table cell | Table cell |
+
+---
+
+## Markdown
+
+kramdown with GFM input — the GitHub Pages default. `_config.yml` sets no `markdown:`
+key, so changing processor would mean changing that. Everything below was established
+by building a probe post and reading the rendered HTML.
+
+### Footnotes
+
+Footnotes work.[^example] They parse into correct `role="doc-noteref"` markup and an
+endnote block at the foot of the page. They looked broken for a while only because
+nothing styled them — the endnote list inherited body size and colour, so it read as
+a stray numbered list rather than apparatus.[^second]
+
+[^example]: The marker is accent-coloured and bracketed so it reads as a reference.
+[^second]: The arrow returns you to where you were reading.
+
+### Task lists
+
+- [x] `- [x]` renders a checked box
+- [ ] `- [ ]` renders an empty one
+- [ ] the list bullet is suppressed, or each item shows a disc *and* a checkbox
+
+### Definition lists
+
+A kramdown extension, not GFM.
+
+Term
+: The definition, indented behind a rule.
+
+Another term
+: Its definition.
+
+### Abbreviations
+
+Also kramdown. The HTML spec defines this.
+
+*[HTML]: HyperText Markup Language
+
+### Code
+
+Rouge tokenises fenced blocks and emits span classes; the four `--syn-*` tokens
+colour them.
+
+```js
+// a comment
+const greeting = "hello";
+function shout(text, times = 3) {
+  return Array.from({ length: times }, () => text.toUpperCase()).join(" ");
+}
+```
+
+A second language, because Rouge emits different token classes per lexer and a
+class with no rule renders in body colour — highlighting that looks broken rather
+than absent. Exercising two lexers here means the test catches that.
+
+```python
+class Kettle:
+    """Boil water, eventually."""
+    def __init__(self, litres: float = 1.7):
+        self.litres = litres
+        self.on = False
+
+    def boil(self):
+        if self.litres > 0:
+            self.on = True
+        return f"boiling {self.litres}L"
+```
+
+### Attribute lists
+
+`{: .lede}` after a block applies one of this page's classes to it — handy for
+promoting a paragraph without writing HTML.
+
+### Not supported
+
+| Syntax | What happens |
+| --- | --- |
+| Bare URL `https://example.com` | stays plain text — wrap in `<>` or use `[text](url)` |
+| Emoji `:smile:` | passes through literally; needs the `jemoji` plugin |
+| Maths `$$a^2$$` | becomes MathJax `\(a^2\)`, but no MathJax is loaded, so it shows as literal backslash-parens |
 
 ---
 

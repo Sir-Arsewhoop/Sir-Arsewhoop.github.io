@@ -202,11 +202,62 @@ test('the style guide shows a swatch for every token', () => {
     .matchAll(/(--[a-z0-9-]+)\s*:\s*#[0-9a-fA-F]{6}\s*;/g)]
     .map((m) => m[1]);
   const unique = [...new Set(tokens)];
-  assert.ok(unique.length === 8, `expected 8 tokens, found ${unique.length}`);
+  // A deliberate count, not a lower bound: growing the palette should be a
+  // decision, and adding a token without a swatch should fail here.
+  assert.ok(unique.length === 12, `expected 12 tokens, found ${unique.length}`);
   for (const token of unique) {
     assert.ok(
       guide.includes(token),
       `${token} has no swatch in the style guide`,
+    );
+  }
+});
+
+test('every class kramdown emits has styling', () => {
+  // kramdown and Rouge generate markup we never write by hand: footnote blocks,
+  // task-list wrappers, syntax spans. An unstyled one does not fail anywhere —
+  // it just renders naked, which is exactly how footnotes went unnoticed. The
+  // style guide exercises each feature, so scanning its output for these
+  // classes and checking site.css answers for them catches the next one too.
+  const guide = read('styleguide/index.html');
+  const css = readFileSync('assets/css/site.css', 'utf8');
+
+  const required = [
+    ['footnotes', /\.footnotes\b/],
+    ['doc-noteref', /sup\[role="doc-noteref"\]/],
+    ['reversefootnote', /\.reversefootnote\b/],
+    ['task-list', /\.task-list\b/],
+    ['task-list-item-checkbox', /\.task-list-item-checkbox\b/],
+    ['highlight', /\.highlight\b/],
+  ];
+
+  for (const [marker, rule] of required) {
+    assert.ok(guide.includes(marker), `style guide never exercises "${marker}"`);
+    assert.match(css, rule, `"${marker}" is emitted but has no CSS rule`);
+  }
+
+  // Definition lists and abbreviations are plain elements, so check the tags.
+  for (const [tag, rule] of [['<dt>', /^dt \{/m], ['<dd>', /^dd \{/m], ['<abbr', /^abbr\[title\]/m]]) {
+    assert.ok(guide.includes(tag), `style guide never exercises ${tag}`);
+    assert.match(css, rule, `${tag} is emitted but has no CSS rule`);
+  }
+});
+
+test('every Rouge token class in the style guide is coloured', () => {
+  // Rouge emits a span per token type. Any class it produces that site.css does
+  // not name renders in body colour, which reads as broken highlighting rather
+  // than none at all.
+  const guide = read('styleguide/index.html');
+  const css = readFileSync('assets/css/site.css', 'utf8');
+  const emitted = new Set(
+    [...guide.matchAll(/<span class="([a-z]{1,3})">/g)].map((m) => m[1]),
+  );
+  assert.ok(emitted.size > 3, `expected Rouge to emit several token classes, saw ${emitted.size}`);
+  for (const cls of emitted) {
+    assert.match(
+      css,
+      new RegExp(`\\.highlight \\.${cls}\\b`),
+      `Rouge emits .${cls} but site.css does not colour it`,
     );
   }
 });

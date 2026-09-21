@@ -350,3 +350,191 @@ jelly-chip {
   border-radius: 0;
   flex: none;
 }
+
+/* --- footnotes -----------------------------------------------------------
+ * kramdown emits these automatically for [^ref] syntax. Without styling the
+ * endnote block is indistinguishable from body copy — it reads as a stray
+ * numbered list welded to the end of the post, which is what made footnotes
+ * look broken rather than merely unstyled.
+ * ---------------------------------------------------------------------- */
+
+/* The marker in running text. Accent-coloured so it reads as a reference
+ * rather than a typo, and with line-height reset so a footnote does not open
+ * up the line it sits on. */
+sup[role="doc-noteref"] {
+  font-family: var(--font-mono);
+  font-size: 0.7em;
+  line-height: 0;
+  margin-inline-start: 0.15em;
+}
+
+sup[role="doc-noteref"] a {
+  text-decoration: none;
+  padding-inline: 0.15em;
+}
+
+sup[role="doc-noteref"] a::before { content: "["; }
+sup[role="doc-noteref"] a::after { content: "]"; }
+
+.footnotes {
+  margin-block-start: calc(var(--step) * 2.5);
+  padding-block-start: var(--step);
+  border-top: 1px solid var(--rule);
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+}
+
+.footnotes ol {
+  margin: 0;
+  padding-inline-start: 1.3rem;
+}
+
+.footnotes li {
+  margin-block-end: 0.5rem;
+}
+
+.footnotes li::marker {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+.footnotes p {
+  margin-block: 0;
+}
+
+.reversefootnote {
+  text-decoration: none;
+  margin-inline-start: 0.35em;
+}
+
+/* --- task lists ----------------------------------------------------------
+ * GFM `- [ ]` syntax. The bullet must go, or each item shows a disc AND a
+ * checkbox.
+ * ---------------------------------------------------------------------- */
+
+.task-list {
+  list-style: none;
+  padding-inline-start: 0;
+}
+
+.task-list-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55em;
+}
+
+.task-list-item-checkbox {
+  accent-color: var(--accent);
+  flex: none;
+  margin: 0;
+  translate: 0 0.15em;
+}
+
+/* --- definition lists, abbreviations ------------------------------------ */
+
+dt {
+  font-weight: 600;
+  margin-block-start: var(--step);
+}
+
+dd {
+  margin-inline-start: 0;
+  padding-inline-start: var(--step);
+  border-inline-start: 1px solid var(--rule);
+  color: var(--ink-muted);
+}
+
+abbr[title] {
+  text-decoration: underline dotted;
+  text-underline-offset: 0.2em;
+  cursor: help;
+}
+
+/* --- syntax highlighting -------------------------------------------------
+ * Rouge tokenises fenced code and emits these classes. Without colours it
+ * still emits every span, so code blocks render monochrome and the
+ * highlighting looks broken rather than absent.
+ *
+ * Only four hues plus muted comments — enough to separate structure from
+ * content without turning a reading page into an IDE. Every colour is a
+ * --syn-* token, and test/tokens.test.mjs holds each to AA against --bg.
+ * ---------------------------------------------------------------------- */
+
+.highlight .c,  .highlight .c1, .highlight .cm,
+.highlight .cp, .highlight .cs, .highlight .cd {
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+.highlight .k,  .highlight .kc, .highlight .kd, .highlight .kn,
+.highlight .kp, .highlight .kr, .highlight .kt,
+.highlight .ow, .highlight .o {
+  color: var(--syn-keyword);
+}
+
+.highlight .s,  .highlight .s1, .highlight .s2, .highlight .sb,
+.highlight .sc, .highlight .sd, .highlight .se, .highlight .sh,
+.highlight .si, .highlight .sr, .highlight .ss, .highlight .sx {
+  color: var(--syn-string);
+}
+
+.highlight .n,  .highlight .na, .highlight .nb, .highlight .nc,
+.highlight .nd, .highlight .ne, .highlight .nf, .highlight .ni,
+.highlight .nl, .highlight .nn, .highlight .no, .highlight .nt,
+.highlight .nv, .highlight .nx, .highlight .py, .highlight .vc,
+.highlight .vg, .highlight .vi {
+  color: var(--syn-name);
+}
+
+.highlight .m,  .highlight .mb, .highlight .mf, .highlight .mh,
+.highlight .mi, .highlight .mo, .highlight .il {
+  color: var(--syn-number);
+}
+
+.highlight .err {
+  color: var(--syn-keyword);
+  text-decoration: underline wavy;
+}
+
+/* Rouge wraps the block in .highlighter-rouge > .highlight > pre.highlight.
+ * The inner pre must not repeat the outer border, or code blocks get two. */
+.highlighter-rouge .highlight {
+  background: none;
+}
+
+.highlighter-rouge pre.highlight {
+  margin: 0;
+}
+
+/* Punctuation and delimiters. Braces and semicolons stay body-coloured so they
+ * recede; quote marks take the string colour so a string reads as one object. */
+.highlight .p,
+.highlight .pi,
+.highlight .w {
+  color: var(--ink);
+}
+
+.highlight .dl,
+.highlight .sa {
+  color: var(--syn-string);
+}
+
+.highlight .bp,
+.highlight .fm,
+.highlight .vm {
+  color: var(--syn-name);
+}
+
+/* Rouge's generic tokens, used by diffs and by prompts in shell transcripts.
+ * Listed even though no post uses them yet: the alternative is discovering a
+ * language emits one of these only after publishing a post that looks broken. */
+.highlight .gd { color: var(--syn-keyword); }
+.highlight .gi { color: var(--syn-string); }
+.highlight .gh,
+.highlight .gu,
+.highlight .gp { color: var(--ink-muted); }
+.highlight .gt,
+.highlight .gr { color: var(--syn-keyword); }
+.highlight .go { color: var(--ink-muted); }
+.highlight .ge { font-style: italic; }
+.highlight .gs { font-weight: 600; }

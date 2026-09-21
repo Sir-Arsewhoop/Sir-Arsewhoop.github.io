@@ -3,11 +3,12 @@
  *
  * Palette: gruvbox (github.com/morhetz/gruvbox), values from colors/gruvbox.vim.
  * Every value here is asserted by test/tokens.test.mjs — change one and the
- * test tells you immediately whether it is still legible. Adding a ninth token
+ * test tells you immediately whether it is still legible. Adding a token
  * requires adding its assertion in the same commit.
  * ------------------------------------------------------------------------- */
 
 :root {
+  /* --- interface ------------------------------------------------------- */
   /* light — gruvbox light0 / light1 / light2, dark1, faded_orange */
   --bg:        #fbf1c7;  /* light0                                          */
   --bg-sunk:   #f2e5bc;  /* light0_soft — recessed surfaces, code blocks    */
@@ -17,6 +18,23 @@
   --rule:      #d5c4a1;  /* light2     — hairlines, borders                 */
   --accent:    #af3a03;  /* faded_orange                      5.4:1 on --bg */
   --on-accent: #fbf1c7;  /* text on --accent              5.4:1 on --accent */
+
+  /* --- syntax highlighting --------------------------------------------- */
+  /* Code is body-sized text, so every one of these must clear AA against
+   * --bg. Three gruvbox syntax colours do not, and are substituted with the
+   * nearest passing member of the same hue family:
+   *
+   *   faded_green #79740e  4.3:1  ->  #6d690d  5.0:1   (strings)
+   *   faded_aqua  #427b58  4.4:1  ->  #3d7052  5.1:1   (names)
+   *   gray        #928374  4.0:1  ->  --ink-muted       (comments)
+   *
+   * Comments deliberately reuse --ink-muted rather than gruvbox gray: it is
+   * the one token already proven legible in both schemes, and a comment is
+   * secondary text, which is exactly what --ink-muted means everywhere else. */
+  --syn-keyword: #9d0006;  /* faded_red                       7.6:1 on --bg */
+  --syn-string:  #6d690d;  /* faded_green, darkened           5.0:1 on --bg */
+  --syn-name:    #3d7052;  /* faded_aqua, darkened            5.1:1 on --bg */
+  --syn-number:  #8f3f71;  /* faded_purple                    5.9:1 on --bg */
 
   /* Bridge to Jelly UI. Every Jelly component resolves --jelly-accent, which
    * itself falls back to --jelly-color-background-accent, so setting the theme
@@ -46,6 +64,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    /* --- interface ----------------------------------------------------- */
     /* dark — gruvbox dark0 / dark0_hard / dark1, light1, bright_yellow */
     --bg:        #282828;  /* dark0                                          */
     --bg-sunk:   #1d2021;  /* dark0_hard                                     */
@@ -55,5 +74,12 @@
     --rule:      #504945;  /* dark2                                          */
     --accent:    #fabd2f;  /* bright_yellow                   8.7:1 on --bg  */
     --on-accent: #282828;  /* text on --accent            8.7:1 on --accent  */
+
+    /* --- syntax highlighting ------------------------------------------- */
+    /* bright_red #fb4934 measures 4.3:1 here and is lightened to clear AA. */
+    --syn-keyword: #ff6055;  /* bright_red, lightened         5.0:1 on --bg  */
+    --syn-string:  #b8bb26;  /* bright_green                  7.2:1 on --bg  */
+    --syn-name:    #8ec07c;  /* bright_aqua                   7.0:1 on --bg  */
+    --syn-number:  #d3869b;  /* bright_purple                 5.4:1 on --bg  */
   }
 }
