@@ -34,12 +34,12 @@ I'd love to see the statistics for which puzzles were answered quickest, or what
 
 I think the organisers did a shuffle of the prizes so that we wouldn't be sent away to jab dogs, which I appreciate[^9] as it felt like not just winning a ticket for next year, but being invited back to take part.  I hope we made a good impression and didn't rock the boat too much by taking part, but the access to a unique event like this was a seriously appreciated privilege and one I look forward to having next year as well!
 
-[^1] They are the world number one when it comes to escape rooms played, which is an odd metric, but shows a breadth of experience that you would hope boded well for this puzzle race.
-[^2] And risks.
-[^3] Sorry, this is getting a bit quote heavy, but these were not my words.
-[^4] He lied, modestly.
-[^5] That number being in the dozens.
-[^6] I.
-[^7] My teammates.
-[^8] Puzzle.final.final
-[^9] I was fully prepared to learn and practice phlebotomy if called upon. 
+[^1]: They are the world number one when it comes to escape rooms played, which is an odd metric, but shows a breadth of experience that you would hope boded well for this puzzle race.
+[^2]: And risks.
+[^3]: Sorry, this is getting a bit quote heavy, but these were not my words.
+[^4]: He lied, modestly.
+[^5]: That number being in the dozens.
+[^6]: I.
+[^7]: My teammates.
+[^8]: Puzzle.final.final
+[^9]: I was fully prepared to learn and practice phlebotomy if called upon. 

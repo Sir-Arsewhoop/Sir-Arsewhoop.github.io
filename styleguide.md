@@ -92,6 +92,11 @@ a stray numbered list rather than apparatus.[^second]
 [^example]: The marker is accent-coloured and bracketed so it reads as a reference.
 [^second]: The arrow returns you to where you were reading.
 
+**The definition needs a colon.** `[^1]: text` works; `[^1] text` does not, and fails
+in the worst way — kramdown finds no definitions, so it leaves the markers *and* the
+definition lines as literal text in the middle of the post. No error, no warning,
+and it only shows up when you read the published page.
+
 ### Task lists
 
 - [x] `- [x]` renders a checked box
