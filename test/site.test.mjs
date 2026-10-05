@@ -285,23 +285,9 @@ test('the about page builds', () => {
   assert.ok(read('about/index.html').includes(TITLE));
 });
 
-test('every tag in every post is quoted', () => {
-  // Unquoted YAML tags are silently coerced. Verified by building real posts:
-  //   tags: [no, on, off, yes, null]  ->  false, true, false, true, and `null`
-  //   vanishes from the list entirely.
-  // Quoting every tag removes the whole class of problem, and matches the rule
-  // already applied to `title` and `summary`.
-  for (const file of readdirSync('_posts')) {
-    const fm = readFileSync(`_posts/${file}`, 'utf8').split('---')[1] ?? '';
-    const line = fm.match(/^tags:\s*(.+)$/m)?.[1];
-    if (!line) continue;
-    assert.match(
-      line.trim(),
-      /^\[\s*(?:"[^"]*"\s*,\s*)*"[^"]*"\s*\]$/,
-      `${file}: tags must be a quoted flow list, e.g. tags: ["hardware", "esp32"] — got ${line.trim()}`,
-    );
-  }
-});
+// Post-source rules — frontmatter keys, quoting, draft flags, footnote syntax —
+// live in test/posts.test.mjs. They need no build, so they run even when Docker
+// is unavailable, which is when you most want them.
 
 test('no template renders the build clock', () => {
   // `site.time` is Jekyll's build timestamp. Rendering it anywhere tells a

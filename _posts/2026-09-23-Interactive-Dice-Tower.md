@@ -3,7 +3,7 @@ title: "Dice Towers"
 date: 2026-09-23
 tags: ["Games", "Microcontrollers"]
 summary: "Paid too much for bluetooth dice, now I need a usecase."
-daft: true
+draft: true
 ---
 
 Sometime a few years ago I stumbled across a post on hackaday where a person had stuffed leds, an imu, and a battery circuit into a dice and had it sending it's rolls to their pc.
@@ -21,6 +21,6 @@ So. If someone else can do it, then I, too, can use that whole process as inspir
 I started with a tiny screen, an esp, and a time of flight sensor(to stand in for a button).
 
 
-[^1] I backed the peachy printer, and despite getting no product at the end of it, I did get a wild ride, involving updates about fraud and theft and mortgages.
+[^1]: I backed the peachy printer, and despite getting no product at the end of it, I did get a wild ride, involving updates about fraud and theft and mortgages.
 
-[^2] Wildly expensive.
+[^2]: Wildly expensive.
